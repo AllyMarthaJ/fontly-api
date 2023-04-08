@@ -16,14 +16,7 @@ app.post("/canvas/render/raw", (req, res) => {
 		threshold: req.body.threshold,
 	});
 
-	const trimmed = trim(
-		rendered.split("\n").map((row) => row.split("")),
-		(entry) => entry === req.body.background
-	)
-		.map((row) => row.join(""))
-		.join("\n");
-
-	res.send(trimmed);
+	res.send(rendered);
 });
 
 app.post("/canvas/render/:text", (req, res) => {
@@ -40,14 +33,7 @@ app.post("/canvas/render/:text", (req, res) => {
 		threshold: req.body.threshold,
 	});
 
-	const trimmed = trim(
-		rendered.split("\n").map((row) => row.split("")),
-		(entry) => entry === req.body.background
-	)
-		.map((row) => row.join(""))
-		.join("\n");
-
-	res.send(trimmed);
+	res.send(rendered);
 });
 
 app.post("/canvas/data/:text", (req, res) => {

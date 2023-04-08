@@ -89,17 +89,24 @@ export function renderToCanvas({
 export function renderFromData(body: Rgb[][], options: PrintOptions) {
 	let result = "";
 
-	body.forEach((row) => {
-		row.forEach((pixel) => {
-			const av = (pixel.r + pixel.g + pixel.b) / 3;
+	let transform = body.map((row) =>
+		row.map((pixel) => (pixel.r + pixel.g + pixel.b) / 3)
+	);
 
+	transform = trim(transform, (av) => av >= options.threshold);
+
+	transform.forEach((row) => {
+		row.forEach((average) => {
 			result = result.concat(
-				av < options.threshold ? options.foreground : options.background
+				average < options.threshold
+					? options.foreground
+					: options.background
 			);
 		});
 		result = result.concat("\n");
 	});
 
+	// Trim the result by default, because gross.
 	return result;
 }
 
