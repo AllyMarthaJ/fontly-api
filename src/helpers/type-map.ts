@@ -5,7 +5,7 @@
 export function typeMap<T extends object>(example: T): any {
 	if (Array.isArray(example)) {
 		return {
-			entries: typeMap(example[0]),
+			array: typeMap(example[0]),
 		};
 	}
 
