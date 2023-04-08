@@ -16,3 +16,7 @@ app.use("/canvas", canvas);
 app.listen(port, () => {
 	console.log(`Listening at http://localhost:${port}`);
 });
+
+process.on("SIGHUP", (signal) => {
+	console.log(`Received event: ${signal}`);
+});

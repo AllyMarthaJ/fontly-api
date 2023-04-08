@@ -1,2 +1,5 @@
 .env
 .gitignore
+Dockerfile
+node_modules
+.git
