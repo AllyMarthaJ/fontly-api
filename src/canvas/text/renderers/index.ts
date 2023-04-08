@@ -5,7 +5,7 @@ import { typeMap } from "../../../helpers/type-map";
 const router = Router();
 
 router.get("/pixelMap", (_, res) => {
-	const body: DrawOptions = {
+	const exampleBody: DrawOptions = {
 		text: "demo",
 		fontFamily: "demo",
 		fontSize: 10,
@@ -13,7 +13,7 @@ router.get("/pixelMap", (_, res) => {
 	};
 	const mappedType = typeMap({
 		params: { text: "demo" },
-		body: body,
+		body: exampleBody,
 	});
 
 	const content = JSON.stringify(mappedType);

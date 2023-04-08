@@ -6,20 +6,21 @@ import { Rgb } from "../renderers/pixelMap";
 const router = Router();
 
 router.get("/average", (_, res) => {
-	const pixelData: Rgb = {
+	const examplePixelData: Rgb = {
 		r: 0,
 		g: 0,
 		b: 0,
 	};
-	const body: PrintOptions = {
+	const exampleBody: PrintOptions = {
 		background: "demo",
 		foreground: "demo",
 		threshold: 200,
 	};
+
 	const mappedType = typeMap({
 		body: {
-			data: [[pixelData]],
-			...body,
+			data: [[examplePixelData]],
+			...exampleBody,
 		},
 	});
 
