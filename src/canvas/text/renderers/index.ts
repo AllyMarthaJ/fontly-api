@@ -1,7 +1,27 @@
 import { Router } from "express";
-import { convertToPixelMap } from "./pixelMap";
+import { DrawOptions, convertToPixelMap } from "./pixelMap";
+import { typeMap } from "../../../helpers/type-map";
 
 const router = Router();
+
+router.get("/pixelMap", (_, res) => {
+	const body: DrawOptions = {
+		text: "demo",
+		fontFamily: "demo",
+		fontSize: 10,
+		fill: true,
+	};
+	const mappedType = typeMap({
+		params: { text: "demo" },
+		body: body,
+	});
+
+	const content = JSON.stringify(mappedType);
+
+	res.statusCode = 200;
+	res.contentType("application/json");
+	res.send(content);
+});
 
 router.post("/pixelMap/:text", (req, res) => {
 	const pixelMap = convertToPixelMap({

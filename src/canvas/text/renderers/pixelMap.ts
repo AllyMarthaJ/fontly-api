@@ -1,5 +1,5 @@
 import { doc } from "../../../dom";
-import { measureString } from "../helpers/measureString";
+import { measureString } from "../helpers/measure-string";
 
 export type DrawOptions = {
 	text: string;

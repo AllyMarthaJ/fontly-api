@@ -2,11 +2,13 @@ import { Router } from "express";
 
 import renderers from "./renderers";
 import transformers from "./transformers";
+import quickStart from "./quick-start";
 
 const router = Router();
 
 router.use("/render", renderers);
 router.use("/transform", transformers);
+router.use("/", quickStart);
 
 // router.post("/render/raw", (req, res) => {
 // 	const rendered = renderFromData(req.body.data, {
