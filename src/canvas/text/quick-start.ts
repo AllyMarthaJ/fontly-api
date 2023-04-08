@@ -6,7 +6,8 @@ import { typeMap } from "../../helpers/type-map";
 const router = Router();
 
 router.get("/pma", (_, res) => {
-	const exampleBody: Omit<DrawOptions & PrintOptions, "text"> = {
+	const exampleBody: DrawOptions & PrintOptions = {
+		text: "demo",
 		fontFamily: "Arial",
 		fontSize: 20,
 		fill: true,
@@ -31,10 +32,10 @@ router.get("/pma", (_, res) => {
  * PMA = Pixel Map Average, where we take the average channel value of
  * each pixel in the image produced by rendering text to a canvas.
  */
-router.post("/pma/:text", (req, res) => {
+router.post("/pma/:text?", (req, res) => {
 	const pixelMap = convertToPixelMap({
 		...req.body,
-		text: req.params.text,
+		text: req.params.text || req.body.text,
 	});
 
 	const transformedAverage = transformAverage(pixelMap, req.body);

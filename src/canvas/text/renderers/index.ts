@@ -23,10 +23,10 @@ router.get("/pixelMap", (_, res) => {
 	res.send(content);
 });
 
-router.post("/pixelMap/:text", (req, res) => {
+router.post("/pixelMap/:text?", (req, res) => {
 	const pixelMap = convertToPixelMap({
 		...req.body,
-		text: req.params.text,
+		text: req.params.text || req.body.text,
 	});
 
 	const content = JSON.stringify(pixelMap);
