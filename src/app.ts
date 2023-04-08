@@ -1,6 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
-import { renderFromData, renderToCanvas } from "./canvas";
+import { renderFromData, renderToCanvas, trim } from "./canvas";
 
 dotenv.config();
 
@@ -15,7 +15,15 @@ app.post("/canvas/render/raw", (req, res) => {
 		foreground: req.body.foreground,
 		threshold: req.body.threshold,
 	});
-	res.send(rendered);
+
+	const trimmed = trim(
+		rendered.split("\n").map((row) => row.split("")),
+		(entry) => entry === req.body.background
+	)
+		.map((row) => row.join(""))
+		.join("\n");
+
+	res.send(trimmed);
 });
 
 app.post("/canvas/render/:text", (req, res) => {
@@ -32,7 +40,14 @@ app.post("/canvas/render/:text", (req, res) => {
 		threshold: req.body.threshold,
 	});
 
-	res.send(rendered);
+	const trimmed = trim(
+		rendered.split("\n").map((row) => row.split("")),
+		(entry) => entry === req.body.background
+	)
+		.map((row) => row.join(""))
+		.join("\n");
+
+	res.send(trimmed);
 });
 
 app.post("/canvas/data/:text", (req, res) => {
