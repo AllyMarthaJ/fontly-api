@@ -65,6 +65,7 @@ export function transformLightness(
 	options: TransformLightnessOptions
 ) {
 	if (samples.length === 0) return "";
+
 	let result = "";
 
 	let transform = body.map((row) => row.map((pixel) => lightness(pixel)));
