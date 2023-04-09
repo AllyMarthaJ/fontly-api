@@ -1,13 +1,13 @@
 import { Router } from "express";
 import { TransformAverageOptions, transformAverage } from "./average";
 import { typeMap } from "../../helpers/type-map";
-import { Rgb } from "../text/renderers/pixelMap";
 import {
 	CharacterSample,
 	TransformLightnessOptions,
 	getLightness,
 	transformLightness,
 } from "./lightness";
+import { Rgb } from "../shared/rgb";
 
 const router = Router();
 
@@ -73,7 +73,6 @@ router.get("/lightness", (req, res) => {
 });
 router.post("/lightness", (req, res) => {
 	const light = transformLightness(req.body.data, req.body.samples, req.body);
-	console.log(req.body);
 
 	res.statusCode = 200;
 	res.send(light);
