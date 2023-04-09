@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { TransformAverageOptions, transformAverage } from "./average";
-import { typeMap } from "../../../helpers/type-map";
-import { Rgb } from "../renderers/pixelMap";
+import { typeMap } from "../../helpers/type-map";
+import { Rgb } from "../text/renderers/pixelMap";
 import {
 	CharacterSample,
 	TransformLightnessOptions,

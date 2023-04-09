@@ -1,5 +1,7 @@
+import { createCanvas, registerFont } from "canvas";
 import { doc } from "../../../dom";
 import { measureString } from "../helpers/measure-string";
+import path from "path";
 
 export type DrawOptions = {
 	text: string;
@@ -24,10 +26,8 @@ export function convertToPixelMap({
 	forceWidth,
 	forceHeight,
 }: DrawOptions): Rgb[][] {
-	const canvas: HTMLCanvasElement = doc.createElement("canvas");
-	const context = canvas.getContext("2d")!;
-
-	let [width, height] = measureString(text, `${fontSize}px '${fontFamily}`);
+	console.log(fontFamily);
+	let [width, height] = measureString(text, `${fontSize}px '${fontFamily}'`);
 	if (forceWidth) width = forceWidth;
 	if (forceHeight) height = forceHeight;
 
@@ -42,16 +42,15 @@ export function convertToPixelMap({
 	const offsetY = height;
 	const renderHeight = 2 * height;
 
-	canvas.width = width;
-	canvas.height = renderHeight;
+	const canvas = createCanvas(width, renderHeight);
+	const context = canvas.getContext("2d");
 
 	// differentiate text from background by pooping white everywhere
 	context.fillStyle = "white";
 	context.fillRect(0, 0, width, renderHeight);
-
 	// See hacks above; ensure we NEVER cut off text.
 	context.textBaseline = "middle";
-	context.font = `${fontSize}px '${fontFamily}`;
+	context.font = `${fontSize}px '${fontFamily}'`;
 	if (fill) {
 		context.fillStyle = "black";
 		context.fillText(text, 0, offsetY);

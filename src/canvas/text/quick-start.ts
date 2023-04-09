@@ -3,13 +3,13 @@ import { DrawOptions, convertToPixelMap } from "./renderers/pixelMap";
 import {
 	TransformAverageOptions,
 	transformAverage,
-} from "./transformers/average";
+} from "../transformers/average";
 import { typeMap } from "../../helpers/type-map";
 import {
 	TransformLightnessOptions,
 	getLightness,
 	transformLightness,
-} from "./transformers/lightness";
+} from "../transformers/lightness";
 
 const router = Router();
 
