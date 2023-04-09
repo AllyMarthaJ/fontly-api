@@ -6,13 +6,15 @@ const router = Router();
 
 router.get("/pixelMap", (_, res) => {
 	const exampleBody: DrawOptions = {
-		text: "demo",
-		fontFamily: "demo",
-		fontSize: 10,
+		text: ".",
+		fontFamily: "Arial",
+		fontSize: 20,
 		fill: true,
+		forceWidth: 15,
+		forceHeight: 10,
 	};
 	const mappedType = typeMap({
-		params: { text: "demo" },
+		params: { text: "." },
 		body: exampleBody,
 	});
 

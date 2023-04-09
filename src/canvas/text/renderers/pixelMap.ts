@@ -6,6 +6,8 @@ export type DrawOptions = {
 	fontSize: number;
 	fontFamily: string;
 	fill?: boolean;
+	forceWidth?: number;
+	forceHeight?: number;
 };
 
 export type Rgb = {
@@ -19,11 +21,16 @@ export function convertToPixelMap({
 	fontSize,
 	fontFamily,
 	fill,
+	forceWidth,
+	forceHeight,
 }: DrawOptions): Rgb[][] {
 	const canvas: HTMLCanvasElement = doc.createElement("canvas");
 	const context = canvas.getContext("2d")!;
 
-	const [width, height] = measureString(text, `${fontSize}px '${fontFamily}`);
+	let [width, height] = measureString(text, `${fontSize}px '${fontFamily}`);
+	if (forceWidth) width = forceWidth;
+	if (forceHeight) height = forceHeight;
+
 	if (!width || !height) return [];
 
 	/**

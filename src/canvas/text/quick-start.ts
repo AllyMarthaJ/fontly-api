@@ -1,12 +1,15 @@
 import { Router } from "express";
 import { DrawOptions, convertToPixelMap } from "./renderers/pixelMap";
-import { PrintOptions, transformAverage } from "./transformers/average";
+import {
+	TransformAverageOptions,
+	transformAverage,
+} from "./transformers/average";
 import { typeMap } from "../../helpers/type-map";
 
 const router = Router();
 
 router.get("/pma", (_, res) => {
-	const exampleBody: DrawOptions & PrintOptions = {
+	const exampleBody: DrawOptions & TransformAverageOptions = {
 		text: "demo",
 		fontFamily: "Arial",
 		fontSize: 20,
