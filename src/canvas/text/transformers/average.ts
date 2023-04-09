@@ -1,7 +1,7 @@
 import { trim } from "../helpers/trim";
 import { Rgb } from "../renderers/pixelMap";
 
-export type PrintOptions = {
+export type TransformAverageOptions = {
 	background: string;
 	foreground: string;
 	threshold: number;
@@ -12,7 +12,10 @@ export type PrintOptions = {
  * by new lines, represented using a binary foreground/background controlled
  * by a threshold.
  */
-export function transformAverage(body: Rgb[][], options: PrintOptions) {
+export function transformAverage(
+	body: Rgb[][],
+	options: TransformAverageOptions
+) {
 	let result = "";
 
 	let transform = body.map((row) =>
