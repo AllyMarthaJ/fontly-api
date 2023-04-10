@@ -99,10 +99,13 @@ router.get("/pml", (_, res) => {
 
 router.post("/pml/:text?", (req, res) => {
 	// form this request as PmlRequest
-	const body: PmlRequest = req.body;
+	const request: PmlRequest = {
+		...req.body,
+		text: req.params.text || req.body.text,
+	};
 
 	// need to create the map first
-	const symbols: string[] = body.symbols || PRINTABLE_ASCII_CHARACTERS;
+	const symbols: string[] = request.symbols || PRINTABLE_ASCII_CHARACTERS;
 	let symbolMap = symbols.map((symbol) => {
 		const renderedSymbol = convertToPixelMap({
 			...req.body.symbolRenderOptions,
@@ -112,33 +115,34 @@ router.post("/pml/:text?", (req, res) => {
 		return getLightness(
 			symbol,
 			renderedSymbol,
-			req.body.symbolLightnessOptions
+			request.symbolLightnessOptions
 		);
 	});
 
 	// See image/quick-start.ts for these shenanigans.
 	symbolMap = symbolMap
 		.sort(
-			(a, b) => (!!req.body.invert ? -1 : 1) * (a.lightness - b.lightness)
+			(a, b) => (!!request.invert ? -1 : 1) * (a.lightness - b.lightness)
 		)
 		.map((symbol, i) => ({
-			text: new Array(req.body.repeatSymbol || 1)
+			text: new Array(request.repeatSymbol || 1)
 				.fill(symbol.text)
 				.join(""),
-			lightness: !!req.body.uniformlyDistributeSymbols
+			lightness: !!request.uniformlyDistributeSymbols
 				? i / symbolMap.length
-				: !!req.body.invert
+				: !!request.invert
 				? 1 - symbol.lightness
 				: symbol.lightness,
 		}));
 
 	// need to render the actual text
-	const pixelMap = convertToPixelMap({
-		...body,
-		text: req.params.text || req.body.text,
-	});
+	const pixelMap = convertToPixelMap(request);
 
-	const transformedLightness = transformLightness(pixelMap, symbolMap, body);
+	const transformedLightness = transformLightness(
+		pixelMap,
+		symbolMap,
+		request
+	);
 
 	res.statusCode = 200;
 	res.send(transformedLightness);
