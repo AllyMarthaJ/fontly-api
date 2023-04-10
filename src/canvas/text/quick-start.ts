@@ -63,6 +63,40 @@ type PmlRequest = DrawOptions &
 		invert: boolean;
 	};
 
+router.get("/pml", (_, res) => {
+	const exampleBody: PmlRequest = {
+		text: "ally",
+		fontFamily: "Comic Sans MS",
+		fontSize: 20,
+		fill: true,
+		cutoffLightness: 0.9,
+		symbolRenderOptions: {
+			fontFamily: "Arial",
+			fontSize: 20,
+			fill: true,
+			forceWidth: 15,
+			forceHeight: 10,
+		},
+		symbolLightnessOptions: {
+			cutoffLightness: 1,
+		},
+		invert: false,
+		uniformlyDistributeSymbols: true,
+		repeatSymbol: 2,
+	};
+
+	const mappedType = typeMap({
+		params: { text: "demo" },
+		body: exampleBody,
+	});
+
+	const content = JSON.stringify(mappedType);
+
+	res.statusCode = 200;
+	res.contentType("application/json");
+	res.send(content);
+});
+
 router.post("/pml/:text?", (req, res) => {
 	// form this request as PmlRequest
 	const body: PmlRequest = req.body;
