@@ -6,6 +6,10 @@ import { typeMap } from "../../../helpers/type-map";
 const router = Router();
 const multerUpload = upload();
 
+type PixelMapRequest = DrawOptions & {
+	image: Buffer;
+};
+
 router.get("/pixelMap", (_, res) => {
 	const exampleBody: PixelMapRequest = {
 		image: Buffer.from([]),
@@ -22,10 +26,6 @@ router.get("/pixelMap", (_, res) => {
 	res.contentType("application/json");
 	res.send(content);
 });
-
-type PixelMapRequest = DrawOptions & {
-	image: Buffer;
-};
 
 router.post(
 	"/pixelMap",
