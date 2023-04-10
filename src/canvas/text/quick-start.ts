@@ -10,6 +10,7 @@ import {
 	getLightness,
 	transformLightness,
 } from "../transformers/lightness";
+import { PRINTABLE_ASCII_CHARACTERS } from "../../helpers/symbols";
 
 const router = Router();
 
@@ -57,6 +58,9 @@ type PmlRequest = DrawOptions &
 		symbols?: string[];
 		symbolRenderOptions: Omit<DrawOptions, "text">;
 		symbolLightnessOptions: TransformLightnessOptions;
+		repeatSymbol: number;
+		uniformlyDistributeSymbols: boolean;
+		invert: boolean;
 	};
 
 router.post("/pml/:text?", (req, res) => {
@@ -64,21 +68,35 @@ router.post("/pml/:text?", (req, res) => {
 	const body: PmlRequest = req.body;
 
 	// need to create the map first
-	const symbols: string[] =
-		body.symbols ||
-		new Array(256 - 32).fill("").map((w, i) => String.fromCharCode(i + 31));
-	const symbolMap = symbols.map((symbol) => {
+	const symbols: string[] = body.symbols || PRINTABLE_ASCII_CHARACTERS;
+	let symbolMap = symbols.map((symbol) => {
 		const renderedSymbol = convertToPixelMap({
-			...body.symbolRenderOptions,
+			...req.body.symbolRenderOptions,
 			text: symbol,
 		});
 
 		return getLightness(
 			symbol,
 			renderedSymbol,
-			body.symbolLightnessOptions
+			req.body.symbolLightnessOptions
 		);
 	});
+
+	// See image/quick-start.ts for these shenanigans.
+	symbolMap = symbolMap
+		.sort(
+			(a, b) => (!!req.body.invert ? -1 : 1) * (a.lightness - b.lightness)
+		)
+		.map((symbol, i) => ({
+			text: new Array(req.body.repeatSymbol || 1)
+				.fill(symbol.text)
+				.join(""),
+			lightness: !!req.body.uniformlyDistributeSymbols
+				? i / symbolMap.length
+				: !!req.body.invert
+				? 1 - symbol.lightness
+				: symbol.lightness,
+		}));
 
 	// need to render the actual text
 	const pixelMap = convertToPixelMap({

@@ -7,6 +7,7 @@ import {
 	transformLightness,
 } from "../transformers/lightness";
 import { DrawOptions, convertToPixelMap } from "./renderers/pixelMap";
+import { PRINTABLE_ASCII_CHARACTERS } from "../../helpers/symbols";
 
 const router = Router();
 const multerUpload = upload();
@@ -27,7 +28,8 @@ router.post("/pml", multerUpload.single("image"), async (req, res, next) => {
 	// need to create the map first
 	const symbols: string[] =
 		(!!req.body.symbols && JSON.parse(req.body.symbols)) ||
-		new Array(127 - 32).fill("").map((w, i) => String.fromCharCode(i + 32));
+		PRINTABLE_ASCII_CHARACTERS;
+
 	let symbolMap = symbols.map((symbol) => {
 		const renderedSymbol = convertTextToPixelMap({
 			...JSON.parse(req.body.symbolRenderOptions),
@@ -76,20 +78,21 @@ router.post("/pml", multerUpload.single("image"), async (req, res, next) => {
 
 	// need to render the actual image
 	if (!req.file || !req.file.buffer) {
-		next();
+		next("Image not supplied.");
+	} else {
+		const pixelMap = await convertToPixelMap(req.file!.buffer!, {
+			resizeFactor: req.body.resizeFactor,
+		});
+
+		const transformedLightness = transformLightness(
+			pixelMap,
+			symbolMap,
+			req.body
+		);
+
+		res.statusCode = 200;
+		res.send(transformedLightness);
 	}
-	const pixelMap = await convertToPixelMap(req.file!.buffer!, {
-		resizeFactor: req.body.resizeFactor,
-	});
-
-	const transformedLightness = transformLightness(
-		pixelMap,
-		symbolMap,
-		req.body
-	);
-
-	res.statusCode = 200;
-	res.send(transformedLightness);
 });
 
 export default router;
