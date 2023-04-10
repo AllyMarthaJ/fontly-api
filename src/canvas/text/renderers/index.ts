@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { DrawOptions, convertToPixelMap } from "./pixelMap";
 import { typeMap } from "../../../helpers/type-map";
+import { ImageOptions, drawToCanvasImage } from "./image";
 
 const router = Router();
 
@@ -40,6 +41,21 @@ router.post("/pixelMap/:text?", (req, res) => {
 	res.statusCode = 200;
 	res.contentType("application/json");
 	res.send(content);
+});
+
+type ImageRequest = DrawOptions & ImageOptions;
+
+router.post("/image/:text?", (req, res) => {
+	const request: ImageRequest = {
+		...req.body,
+		text: req.params.text || req.body.text,
+	};
+
+	const image = drawToCanvasImage(request);
+
+	res.statusCode = 200;
+	res.contentType("image/png");
+	res.send(image);
 });
 
 export default router;
