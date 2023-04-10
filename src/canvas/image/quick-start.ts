@@ -16,12 +16,14 @@ type PmlRequest = TransformLightnessOptions & {
 	symbols: string[];
 	symbolRenderOptions: Omit<DrawOptions, "text">;
 	symbolLightnessOptions: TransformLightnessOptions;
+	repeatSymbol: number;
+	uniformlyDistributeSymbols: boolean;
+	invert: boolean;
 };
 
 router.post("/pml", multerUpload.single("image"), async (req, res, next) => {
 	// form this request as PmlRequest
-	console.log(req.body.symbolLightnessOptions);
-	console.log(req.file?.buffer);
+
 	// need to create the map first
 	const symbols: string[] =
 		(!!req.body.symbols && JSON.parse(req.body.symbols)) ||
@@ -38,11 +40,38 @@ router.post("/pml", multerUpload.single("image"), async (req, res, next) => {
 			JSON.parse(req.body.symbolLightnessOptions)
 		);
 	});
+
+	// A typical monospace font will have an approximate
+	// height:width ratio of 2:1. I'd like to maintain the integrity of images
+	// a little bit, so we double the symbols up.
+	// Also give the option to invert. This is useful for dark theme.
+	// Redistribute the values equally across the map. Since we only care about the
+	// *order* of lightness, and not strictly the lightness values themselves, let's
+	// uniformly distribute the values.
+	// The reason we in fact don't want to care about the original lightness values is
+	// due to the fact that characters share similar lightness values *anyway*. It turns
+	// out the values aren't so wildly different, and so in a typical image we'd like a
+	// range of values used.
+	// Anecdotally, when I tried out the transformLightness method manually via the
+	// /transform endpoint, I used uniformly distributed values which gave me an amazing
+	// output. Conversely when I tried it with text that automatically generated the values
+	// the result was mediocre by comparison.
 	symbolMap = symbolMap
-		.sort((a, b) => b.lightness - a.lightness)
+		.sort(
+			(a, b) =>
+				(req.body.invert === "true" ? -1 : 1) *
+				(a.lightness - b.lightness)
+		)
 		.map((symbol, i) => ({
-			text: `${symbol.text}${symbol.text}`,
-			lightness: i / symbolMap.length,
+			text: new Array(parseInt(req.body.repeatSymbol || 1, 10))
+				.fill(symbol.text)
+				.join(""),
+			lightness:
+				req.body.uniformlyDistributeSymbols === "true"
+					? i / symbolMap.length
+					: req.body.invert === "true"
+					? 1 - symbol.lightness
+					: symbol.lightness,
 		}));
 
 	// need to render the actual image
