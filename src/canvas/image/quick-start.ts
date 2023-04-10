@@ -16,6 +16,17 @@ import { typeMap } from "../../helpers/type-map";
 const router = Router();
 const multerUpload = upload();
 
+type PmlRequest = TransformLightnessOptions & {
+	image: Buffer;
+	symbols: string[];
+	symbolRenderOptions: Omit<TextDrawOptions, "text">;
+	symbolLightnessOptions: TransformLightnessOptions;
+	uniformlyDistributeSymbols: boolean;
+	resizeFactor: number;
+	repeatSymbol: number;
+	invert: boolean;
+};
+
 router.get("/pml", (_, res) => {
 	const exampleBody: PmlRequest = {
 		image: Buffer.from([]),
@@ -48,24 +59,13 @@ router.get("/pml", (_, res) => {
 	res.send(content);
 });
 
-type PmlRequest = TransformLightnessOptions & {
-	image: Buffer;
-	symbols: string[];
-	symbolRenderOptions: Omit<TextDrawOptions, "text">;
-	symbolLightnessOptions: TransformLightnessOptions;
-	uniformlyDistributeSymbols: boolean;
-	resizeFactor: number;
-	repeatSymbol: number;
-	invert: boolean;
-};
-
 router.post("/pml", multerUpload.single("image"), async (req, res, next) => {
 	// form this request as PmlRequest
 	if (!req.file || !req.file.buffer) {
 		next("Image not supplied.");
 	} else {
 		const request: PmlRequest = {
-			image: req.file?.buffer,
+			image: req.file.buffer,
 			symbols:
 				(!!req.body.symbols && JSON.parse(req.body.symbols)) ||
 				PRINTABLE_ASCII_CHARACTERS,
