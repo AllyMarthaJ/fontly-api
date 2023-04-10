@@ -1,15 +1,19 @@
 import { Router } from "express";
 import { TransformAverageOptions, transformAverage } from "./average";
 import { typeMap } from "../../helpers/type-map";
-import { Rgb } from "../text/renderers/pixelMap";
 import {
 	CharacterSample,
 	TransformLightnessOptions,
 	getLightness,
 	transformLightness,
 } from "./lightness";
+import { Rgb } from "../shared/rgb";
 
 const router = Router();
+
+type TransformAverageRequest = TransformAverageOptions & {
+	data: Rgb[][];
+};
 
 router.get("/average", (_, res) => {
 	const examplePixelData: Rgb = {
@@ -17,17 +21,15 @@ router.get("/average", (_, res) => {
 		g: 0,
 		b: 0,
 	};
-	const exampleBody: TransformAverageOptions = {
+	const exampleBody: TransformAverageRequest = {
+		data: [[examplePixelData]],
 		background: "demo",
 		foreground: "demo",
 		threshold: 200,
 	};
 
 	const mappedType = typeMap({
-		body: {
-			data: [[examplePixelData]],
-			...exampleBody,
-		},
+		body: exampleBody,
 	});
 
 	const content = JSON.stringify(mappedType);
@@ -37,13 +39,20 @@ router.get("/average", (_, res) => {
 	res.send(content);
 });
 router.post("/average", (req, res) => {
-	const average = transformAverage(req.body.data, req.body);
+	const request: TransformAverageRequest = req.body;
+
+	const average = transformAverage(request.data, request);
 
 	res.statusCode = 200;
 	res.send(average);
 });
 
-router.get("/lightness", (req, res) => {
+type TransformLightnessRequest = TransformLightnessOptions & {
+	data: Rgb[][];
+	samples: CharacterSample[];
+};
+
+router.get("/lightness", (_, res) => {
 	const examplePixelData: Rgb = {
 		r: 0,
 		g: 0,
@@ -53,16 +62,15 @@ router.get("/lightness", (req, res) => {
 		text: ".",
 		lightness: 0,
 	};
-	const exampleOptions: TransformLightnessOptions = {
+
+	const exampleBody: TransformLightnessRequest = {
+		data: [[examplePixelData]],
+		samples: [exampleSample],
 		cutoffLightness: 0,
 	};
 
 	const mappedType = typeMap({
-		body: {
-			data: [[examplePixelData]],
-			samples: [exampleSample],
-			...exampleOptions,
-		},
+		body: exampleBody,
 	});
 
 	const content = JSON.stringify(mappedType);
@@ -72,12 +80,22 @@ router.get("/lightness", (req, res) => {
 	res.send(content);
 });
 router.post("/lightness", (req, res) => {
-	const light = transformLightness(req.body.data, req.body.samples, req.body);
-	console.log(req.body);
+	const request: TransformLightnessRequest = {
+		data: req.body.data,
+		samples: req.body.samples,
+		cutoffLightness: req.body.cutoffLightness,
+	};
+
+	const light = transformLightness(request.data, request.samples, request);
 
 	res.statusCode = 200;
 	res.send(light);
 });
+
+type MapLightnessRequest = TransformLightnessOptions & {
+	text: string;
+	data: Rgb[][];
+};
 
 router.get("/mapLightness", (req, res) => {
 	const examplePixelData: Rgb = {
@@ -85,10 +103,7 @@ router.get("/mapLightness", (req, res) => {
 		g: 0,
 		b: 0,
 	};
-	const exampleBody: {
-		text: string;
-		data: Rgb[][];
-	} & TransformLightnessOptions = {
+	const exampleBody: MapLightnessRequest = {
 		text: ".",
 		data: [[examplePixelData]],
 		cutoffLightness: 0,
@@ -105,7 +120,13 @@ router.get("/mapLightness", (req, res) => {
 	res.send(content);
 });
 router.post("/mapLightness", (req, res) => {
-	const lightness = getLightness(req.body.text, req.body.data, req.body);
+	const request: MapLightnessRequest = {
+		text: req.body.text,
+		data: req.body.data,
+		cutoffLightness: req.body.cutoffLightness,
+	};
+
+	const lightness = getLightness(request.text, request.data, request);
 
 	res.statusCode = 200;
 	res.send(lightness);

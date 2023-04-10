@@ -1,5 +1,5 @@
+import { Rgb } from "../shared/rgb";
 import { trim } from "../text/helpers/trim";
-import { Rgb } from "../text/renderers/pixelMap";
 
 export type TransformAverageOptions = {
 	background: string;

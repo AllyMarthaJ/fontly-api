@@ -1,7 +1,6 @@
-import { createCanvas, registerFont } from "canvas";
-import { doc } from "../../../dom";
+import { createCanvas } from "canvas";
 import { measureString } from "../helpers/measure-string";
-import path from "path";
+import { Rgb } from "../../shared/rgb";
 
 export type DrawOptions = {
 	text: string;
@@ -12,12 +11,6 @@ export type DrawOptions = {
 	forceHeight?: number;
 };
 
-export type Rgb = {
-	r: number;
-	g: number;
-	b: number;
-};
-
 export function convertToPixelMap({
 	text,
 	fontSize,
@@ -26,7 +19,6 @@ export function convertToPixelMap({
 	forceWidth,
 	forceHeight,
 }: DrawOptions): Rgb[][] {
-	console.log(fontFamily);
 	let [width, height] = measureString(text, `${fontSize}px '${fontFamily}'`);
 	if (forceWidth) width = forceWidth;
 	if (forceHeight) height = forceHeight;

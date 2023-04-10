@@ -4,8 +4,10 @@ import { typeMap } from "../../../helpers/type-map";
 
 const router = Router();
 
+type PixelMapRequest = DrawOptions;
+
 router.get("/pixelMap", (_, res) => {
-	const exampleBody: DrawOptions = {
+	const exampleBody: PixelMapRequest = {
 		text: ".",
 		fontFamily: "Arial",
 		fontSize: 20,
@@ -26,10 +28,12 @@ router.get("/pixelMap", (_, res) => {
 });
 
 router.post("/pixelMap/:text?", (req, res) => {
-	const pixelMap = convertToPixelMap({
+	const request: PixelMapRequest = {
 		...req.body,
 		text: req.params.text || req.body.text,
-	});
+	};
+
+	const pixelMap = convertToPixelMap(request);
 
 	const content = JSON.stringify(pixelMap);
 
