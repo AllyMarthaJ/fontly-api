@@ -67,7 +67,7 @@ router.post("/pml", multerUpload.single("image"), async (req, res, next) => {
 		const request: PmlRequest = {
 			image: req.file?.buffer,
 			symbols:
-				(!!req.body.symbols && JSON.parse(req.body.symbol)) ||
+				(!!req.body.symbols && JSON.parse(req.body.symbols)) ||
 				PRINTABLE_ASCII_CHARACTERS,
 			symbolRenderOptions: JSON.parse(req.body.symbolRenderOptions),
 			symbolLightnessOptions: JSON.parse(req.body.symbolLightnessOptions),
