@@ -45,6 +45,28 @@ router.post("/pixelMap/:text?", (req, res) => {
 
 type ImageRequest = DrawOptions & ImageOptions;
 
+router.get("/image", (_, res) => {
+	const exampleBody: ImageRequest = {
+		text: ".",
+		fontFamily: "Arial",
+		fontSize: 20,
+		fill: true,
+		forceWidth: 15,
+		forceHeight: 10,
+		invert: false,
+	};
+	const mappedType = typeMap({
+		params: { text: "." },
+		body: exampleBody,
+	});
+
+	const content = JSON.stringify(mappedType);
+
+	res.statusCode = 200;
+	res.contentType("application/json");
+	res.send(content);
+});
+
 router.post("/image/:text?", (req, res) => {
 	const request: ImageRequest = {
 		...req.body,
